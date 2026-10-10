@@ -60,6 +60,36 @@ body {
   z-index: 0;
 }
 
+.music-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid #FFB3CC;
+  border-radius: 9999px;
+  background: white;
+  color: #4A1D3F;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  box-shadow: 0 4px 16px rgba(74, 29, 63, 0.12);
+  cursor: pointer;
+}
+
+.music-toggle:focus-visible {
+  outline: 3px solid #FF4D8D;
+  outline-offset: 3px;
+}
+
+.music-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 /* ── Button styles ───────────────────────────────────────── */
 .btn-yes {
   min-height: 48px;
