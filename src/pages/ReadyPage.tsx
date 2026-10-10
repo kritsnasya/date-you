@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import PageWrapper from '../components/PageWrapper'
+import { useAppState } from '../context/AppStateContext'
 
 export default function ReadyPage() {
   const navigate = useNavigate()
-
+  const { timeChoice } = useAppState()
   return (
     <PageWrapper>
       <div className="w-full max-w-md mx-auto px-4 flex flex-col items-center justify-center text-center min-h-screen gap-8">
@@ -16,7 +17,7 @@ export default function ReadyPage() {
           className="font-extrabold text-[#FF4D8D] text-3xl px-4"
         >
           glad you didn't say no.<br/>
-          be ready by 6, I'm coming to get you 🚗
+          be ready by {timeChoice}, I'm coming to get you 🚗
         </motion.h1>
 
         {/* Horizontal floating hearts below text */}
