@@ -1,0 +1,262 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base styles ─────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: #FFE4EC;
+  color: #4A1D3F;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Typography ──────────────────────────────────────────── */
+.font-pacifico {
+  font-family: 'Pacifico', cursive;
+}
+
+/* ── Reduced motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Floating heart background animation ─────────────────── */
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.5);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-110vh) rotate(20deg) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.heart-bg {
+  position: fixed;
+  bottom: -50px;
+  animation: floatUp linear infinite;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* ── Button styles ───────────────────────────────────────── */
+.btn-yes {
+  min-height: 48px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #FF4D8D, #FF79A8);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.125rem;
+  padding: 0.75rem 2.5rem;
+  box-shadow: 0 4px 20px rgba(255, 77, 141, 0.4);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+
+.btn-yes:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 28px rgba(255, 77, 141, 0.5);
+}
+
+.btn-yes:focus-visible {
+  outline: 3px solid #FF4D8D;
+  outline-offset: 3px;
+}
+
+.btn-yes:active {
+  transform: scale(0.97);
+}
+
+.btn-no {
+  min-height: 48px;
+  border-radius: 9999px;
+  background: #e8d5dc;
+  color: #9a7a88;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.8rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  white-space: nowrap;
+  outline: none;
+  touch-action: none;
+}
+
+/* ── Card ──────────────────────────────────────────────────── */
+.card {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(74, 29, 63, 0.1);
+  padding: 2rem;
+}
+
+/* ── Pill button (for time selection) ─────────────────────── */
+.pill-btn {
+  border-radius: 9999px;
+  padding: 0.6rem 1.4rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 2px solid #FFB3CC;
+  background: white;
+  color: #4A1D3F;
+  transition: all 0.15s ease;
+  min-height: 48px;
+}
+
+.pill-btn.selected {
+  background: #FF4D8D;
+  color: white;
+  border-color: #FF4D8D;
+}
+
+.pill-btn:focus-visible {
+  outline: 3px solid #FF4D8D;
+  outline-offset: 3px;
+}
+
+/* ── Date type card ────────────────────────────────────────── */
+.date-type-card {
+  border: 2px solid #FFB3CC;
+  border-radius: 1rem;
+  padding: 1rem 0.5rem;
+  cursor: pointer;
+  text-align: center;
+  background: white;
+  transition: all 0.15s ease;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #4A1D3F;
+}
+
+.date-type-card.selected {
+  border-color: #FF4D8D;
+  background: #FFF0F5;
+  box-shadow: 0 0 0 3px rgba(255, 77, 141, 0.2);
+}
+
+.date-type-card:focus-visible {
+  outline: 3px solid #FF4D8D;
+  outline-offset: 3px;
+}
+
+/* ── Input fields ─────────────────────────────────────────── */
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #FFB3CC;
+  border-radius: 0.75rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  color: #4A1D3F;
+  background: white;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input-field:focus {
+  border-color: #FF4D8D;
+}
+
+.input-field::placeholder {
+  color: #c9a8b7;
+}
+
+.input-label {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #4A1D3F;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* ── Error text ─────────────────────────────────────────────── */
+.error-text {
+  color: #e05080;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-top: 0.3rem;
+}
+
+/* ── Submit button ─────────────────────────────────────────── */
+.btn-submit {
+  min-height: 56px;
+  width: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #FF4D8D, #FF79A8);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 20px rgba(255, 77, 141, 0.4);
+  outline: none;
+}
+
+.btn-submit:disabled {
+  background: #e8d5dc;
+  color: #b89aa8;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: scale(1.02);
+  box-shadow: 0 6px 28px rgba(255, 77, 141, 0.5);
+}
+
+.btn-submit:focus-visible {
+  outline: 3px solid #FF4D8D;
+  outline-offset: 3px;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFE4EC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FFB3CC;
+  border-radius: 10px;
+}
