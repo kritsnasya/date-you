@@ -7,6 +7,9 @@
  */
 
 export const config = {
+  /** Set to false to disable background music on the site */
+  backgroundMusicEnabled: true,
+
   // ── Identity ─────────────────────────────────────────────
   /** Your name — shown on the site */
   ownerName: 'Sameer',
