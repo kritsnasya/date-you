@@ -1,9 +1,12 @@
 import { useEffect, useRef } from 'react'
+import { config } from '../config'
 
 export default function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement>(null)
 
   useEffect(() => {
+    if (!config.backgroundMusicEnabled) return
+
     const audio = audioRef.current
     if (!audio) return
 
@@ -42,6 +45,8 @@ export default function BackgroundMusic() {
       audio.pause()
     }
   }, [])
+
+  if (!config.backgroundMusicEnabled) return null
 
   return (
     <audio
