@@ -1,16 +1,9 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import PageWrapper from '../components/PageWrapper'
-import ConfettiBlast from '../components/ConfettiBlast'
 
 export default function PaymentPage() {
   const navigate = useNavigate()
-  const [paid, setPaid] = useState(false)
-
-  const handlePay = () => {
-    setPaid(true)
-  }
 
   return (
     <PageWrapper>
@@ -54,40 +47,18 @@ export default function PaymentPage() {
           </div>
         </motion.div>
 
-        <AnimatePresence mode="wait">
-          {!paid ? (
-            <motion.div
-              key="buttons"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="w-full flex flex-col gap-3 mt-4"
-            >
-              <button onClick={handlePay} className="btn-yes w-full py-4 text-sm sm:text-base">
-                pay 999 rupees & confirm 💝
-              </button>
-              
-              <button
-                onClick={() => navigate(-1)}
-                className="text-[#4A1D3F] opacity-50 hover:opacity-100 text-sm font-bold transition-opacity"
-              >
-                go back
-              </button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="success"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mt-6 flex flex-col items-center"
-            >
-              <ConfettiBlast autoFire />
-              <div className="text-5xl mb-4">🤣</div>
-              <h2 className="font-extrabold text-[#FF4D8D] text-2xl text-[#FF4D8D]">Just kidding!</h2>
-              <p className="text-[#4A1D3F] font-bold mt-2">See you on our date! 💕</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div className="w-full flex flex-col gap-3 mt-4">
+          <button disabled className="btn-yes w-full py-4 text-sm sm:text-base">
+            pay 999 rupees & confirm 💝
+          </button>
+          
+          <button
+            onClick={() => navigate(-1)}
+            className="text-[#4A1D3F] opacity-50 hover:opacity-100 text-sm font-bold transition-opacity"
+          >
+            go back
+          </button>
+        </div>
 
       </div>
     </PageWrapper>
