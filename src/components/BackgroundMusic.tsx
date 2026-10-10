@@ -1,16 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
-
-type MusicStatus = 'loading' | 'playing' | 'paused' | 'unavailable'
+import { useEffect, useRef } from 'react'
 
 export default function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement>(null)
-  const [status, setStatus] = useState<MusicStatus>('loading')
 
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
 
-    let active = true
     let listeningForInteraction = true
 
     const stopListening = () => {
@@ -20,32 +16,20 @@ export default function BackgroundMusic() {
     }
 
     const startPlayback = () => {
-      void audio.play().catch(() => {
-        if (active) setStatus(audio.error ? 'unavailable' : 'paused')
-      })
+      // Browsers may block autoplay until the visitor interacts with the page.
+      void audio.play().catch(() => undefined)
     }
 
-    const handlePlay = () => setStatus('playing')
-    const handlePause = () => setStatus('paused')
     const handleError = () => {
-      setStatus('unavailable')
+      console.error('Background music failed to load:', audio.currentSrc)
       stopListening()
     }
 
-    const startAfterInteraction = (event: Event) => {
-      if (
-        event.target instanceof Element &&
-        event.target.closest('[data-music-control]')
-      ) {
-        return
-      }
-
+    const startAfterInteraction = () => {
       stopListening()
       startPlayback()
     }
 
-    audio.addEventListener('play', handlePlay)
-    audio.addEventListener('pause', handlePause)
     audio.addEventListener('error', handleError)
 
     document.addEventListener('pointerdown', startAfterInteraction)
@@ -53,57 +37,18 @@ export default function BackgroundMusic() {
     startPlayback()
 
     return () => {
-      active = false
       if (listeningForInteraction) stopListening()
-      audio.removeEventListener('play', handlePlay)
-      audio.removeEventListener('pause', handlePause)
       audio.removeEventListener('error', handleError)
       audio.pause()
     }
   }, [])
 
-  const togglePlayback = () => {
-    const audio = audioRef.current
-    if (!audio || status === 'unavailable') return
-
-    if (audio.paused) {
-      void audio.play().catch(() => {
-        setStatus(audio.error ? 'unavailable' : 'paused')
-      })
-    } else {
-      audio.pause()
-    }
-  }
-
-  const label =
-    status === 'playing'
-      ? 'Music on'
-      : status === 'unavailable'
-        ? 'Music unavailable'
-        : 'Music off'
-
   return (
-    <>
-      <audio
-        ref={audioRef}
-        src={`${import.meta.env.BASE_URL}background-music.mp3`}
-        loop
-        preload="auto"
-      />
-      <button
-        type="button"
-        data-music-control
-        className="music-toggle"
-        onClick={togglePlayback}
-        disabled={status === 'unavailable'}
-        aria-label={
-          status === 'playing' ? 'Turn background music off' : 'Turn background music on'
-        }
-        aria-pressed={status === 'playing'}
-      >
-        <span aria-hidden="true">{status === 'playing' ? '♫' : '♪'}</span>
-        {label}
-      </button>
-    </>
+    <audio
+      ref={audioRef}
+      src={`${import.meta.env.BASE_URL}background-music.mp3`}
+      loop
+      preload="auto"
+    />
   )
 }
