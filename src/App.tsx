@@ -10,6 +10,8 @@ import ReadyPage from './pages/ReadyPage'
 import PaymentPage from './pages/PaymentPage'
 import NotFoundPage from './pages/NotFoundPage'
 import FloatingHearts from './components/FloatingHearts'
+
+import BackgroundMusic from './components/BackgroundMusic'
 import { AppStateProvider } from './context/AppStateContext'
 
 function AnimatedRoutes() {
@@ -47,6 +49,7 @@ export default function App() {
     <AppStateProvider>
       <HashRouter>
         <FloatingHearts />
+        <BackgroundMusic />
         <AnimatedRoutes />
       </HashRouter>
     </AppStateProvider>
