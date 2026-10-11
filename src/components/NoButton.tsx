@@ -4,7 +4,7 @@ import { config } from '../config'
 import { useAppState } from '../context/AppStateContext'
 
 const noLabel = config.noButtonMessages[0]
-const DODGE_DISTANCE = 28
+const DODGE_DISTANCE = 56
 const VIEWPORT_MARGIN = 16
 
 interface NoButtonProps {
