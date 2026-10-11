@@ -92,6 +92,13 @@ body {
   transform: scale(0.97);
 }
 
+
+.question-yes-button:hover,
+.question-yes-button:active {
+  transform: none;
+}
+
+
 .btn-no {
   min-height: 48px;
   border-radius: 9999px;
