@@ -46,7 +46,7 @@ export const config = {
   /** Headline changes after N "No" attempts */
   noAttemptHeadlines: [
     { after: 3, text: "Hmm, the button seems to be broken 🤔" },
-    { after: 6, text: "I think the Yes button is getting bigger 👀" },
+    
     { after: 9, text: "Resistance is futile 😌" },
   ],
 
