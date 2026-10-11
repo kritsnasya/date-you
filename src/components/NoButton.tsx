@@ -4,7 +4,7 @@ import { config } from '../config'
 import { useAppState } from '../context/AppStateContext'
 
 const noLabel = config.noButtonMessages[0]
-const DODGE_DISTANCE = 56
+const DODGE_DISTANCE = 120
 const VIEWPORT_MARGIN = 16
 
 interface NoButtonProps {
@@ -15,7 +15,12 @@ export default function NoButton({ yesRef }: NoButtonProps) {
   const { incrementNoAttempts } = useAppState()
   const btnRef = useRef<HTMLButtonElement>(null)
   const [isDodging, setIsDodging] = useState(false)
-  const [initialPos, setInitialPos] = useState<{ x: number; y: number } | null>(null)
+  const [initialPos, setInitialPos] = useState<{
+    x: number
+    y: number
+    width: number
+    height: number
+  } | null>(null)
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
 
   const dodge = useCallback(
@@ -56,7 +61,12 @@ export default function NoButton({ yesRef }: NoButtonProps) {
       }
 
       if (!isDodging) {
-        setInitialPos({ x: rect.left, y: rect.top })
+        setInitialPos({
+          x: rect.left,
+          y: rect.top,
+          width: rect.width,
+          height: rect.height,
+        })
         setIsDodging(true)
       }
 
@@ -90,18 +100,26 @@ export default function NoButton({ yesRef }: NoButtonProps) {
   if (pos === null) return null
 
   return (
-    <motion.button
-      ref={btnRef}
-      className="btn-no btn-no-active"
-      style={{ position: 'fixed', left: 0, top: 0, zIndex: 50 }}
-      initial={initialPos ? { x: initialPos.x, y: initialPos.y } : false}
-      animate={{ x: pos.x, y: pos.y }}
-      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-      onPointerDown={(event) => dodge(event.clientX, event.clientY)}
-      onKeyDown={handleKeyDown}
-      aria-label="No (this button avoids you)"
+    <span
+      style={{
+        display: 'inline-flex',
+        width: initialPos?.width,
+        height: initialPos?.height,
+      }}
     >
-      {noLabel}
-    </motion.button>
+      <motion.button
+        ref={btnRef}
+        className="btn-no btn-no-active"
+        style={{ position: 'fixed', left: 0, top: 0, zIndex: 50 }}
+        initial={initialPos ? { x: initialPos.x, y: initialPos.y } : false}
+        animate={{ x: pos.x, y: pos.y }}
+        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+        onPointerDown={(event) => dodge(event.clientX, event.clientY)}
+        onKeyDown={handleKeyDown}
+        aria-label="No (this button avoids you)"
+      >
+        {noLabel}
+      </motion.button>
+    </span>
   )
 }
