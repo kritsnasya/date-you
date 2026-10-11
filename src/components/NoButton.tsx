@@ -1,44 +1,11 @@
 import { useCallback, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { config } from '../config'
 import { useAppState } from '../context/AppStateContext'
 
-const { noButtonMessages } = config
-
-function clamp(val: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, val))
-}
-
-function getRandomPosition(
-  btnW: number,
-  btnH: number,
-  yesRect: DOMRect | null,
-  margin = 16,
-): { x: number; y: number } {
-  const vw = window.innerWidth
-  const vh = window.innerHeight
-
-  const maxX = vw - btnW - margin
-  const maxY = vh - btnH - margin
-
-  for (let attempt = 0; attempt < 50; attempt++) {
-    const x = clamp(Math.random() * maxX, margin, maxX)
-    const y = clamp(Math.random() * maxY, margin, maxY)
-
-    if (yesRect) {
-      const overlap =
-        x < yesRect.right + 20 &&
-        x + btnW > yesRect.left - 20 &&
-        y < yesRect.bottom + 20 &&
-        y + btnH > yesRect.top - 20
-
-      if (overlap) continue
-    }
-
-    return { x, y }
-  }
-  return { x: maxX, y: margin }
-}
+const noLabel = config.noButtonMessages[0]
+const DODGE_DISTANCE = 28
+const VIEWPORT_MARGIN = 16
 
 interface NoButtonProps {
   yesRef: React.RefObject<HTMLButtonElement | null>
@@ -47,66 +14,75 @@ interface NoButtonProps {
 export default function NoButton({ yesRef }: NoButtonProps) {
   const { incrementNoAttempts } = useAppState()
   const btnRef = useRef<HTMLButtonElement>(null)
-
   const [isDodging, setIsDodging] = useState(false)
   const [initialPos, setInitialPos] = useState<{ x: number; y: number } | null>(null)
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
-  const [messageIdx, setMessageIdx] = useState(0)
 
-  const dodge = useCallback(() => {
-    let currentW = 100
-    let currentH = 48
-    let startX = 0
-    let startY = 0
+  const dodge = useCallback(
+    (pointerX: number, pointerY: number) => {
+      const button = btnRef.current
+      if (!button) return
 
-    // Capture dimensions and starting position
-    if (!isDodging && btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect()
-      startX = rect.left
-      startY = rect.top
-      currentW = rect.width
-      currentH = rect.height
-    } else {
-      const activeEl = document.querySelector('.btn-no-active') as HTMLButtonElement
-      const elToMeasure = activeEl || btnRef.current
-      if (elToMeasure) {
-        currentW = elToMeasure.offsetWidth
-        currentH = elToMeasure.offsetHeight
+      const rect = button.getBoundingClientRect()
+      const yesRect = yesRef.current?.getBoundingClientRect() ?? null
+
+      let dx = rect.left + rect.width / 2 - pointerX
+      let dy = rect.top + rect.height / 2 - pointerY
+      const length = Math.hypot(dx, dy)
+
+      if (length < 4) {
+        const angle = Math.random() * Math.PI * 2
+        dx = Math.cos(angle)
+        dy = Math.sin(angle)
+      } else {
+        dx /= length
+        dy /= length
       }
-    }
 
-    const yesRect = yesRef.current?.getBoundingClientRect() ?? null
-    const newPos = getRandomPosition(currentW, currentH, yesRect)
+      const maxX = Math.max(VIEWPORT_MARGIN, window.innerWidth - rect.width - VIEWPORT_MARGIN)
+      const maxY = Math.max(VIEWPORT_MARGIN, window.innerHeight - rect.height - VIEWPORT_MARGIN)
+      let nextX = Math.max(VIEWPORT_MARGIN, Math.min(maxX, rect.left + dx * DODGE_DISTANCE))
+      let nextY = Math.max(VIEWPORT_MARGIN, Math.min(maxY, rect.top + dy * DODGE_DISTANCE))
 
-    if (!isDodging) {
-      // Set the initial physical position so it seamlessly animates from its current relative layout spot
-      setInitialPos({ x: startX, y: startY })
-      setIsDodging(true)
-    }
+      if (
+        yesRect &&
+        nextX < yesRect.right + 12 &&
+        nextX + rect.width > yesRect.left - 12 &&
+        nextY < yesRect.bottom + 12 &&
+        nextY + rect.height > yesRect.top - 12
+      ) {
+        nextX = Math.max(VIEWPORT_MARGIN, Math.min(maxX, rect.left - dx * DODGE_DISTANCE))
+        nextY = Math.max(VIEWPORT_MARGIN, Math.min(maxY, rect.top - dy * DODGE_DISTANCE))
+      }
 
-    setPos(newPos)
-    incrementNoAttempts()
+      if (!isDodging) {
+        setInitialPos({ x: rect.left, y: rect.top })
+        setIsDodging(true)
+      }
 
-    setMessageIdx((i) => {
-      if (i >= noButtonMessages.length - 1) return noButtonMessages.length - 2
-      return i + 1
-    })
-  }, [yesRef, incrementNoAttempts, isDodging])
+      setPos({ x: nextX, y: nextY })
+      incrementNoAttempts()
+    },
+    [incrementNoAttempts, isDodging, yesRef],
+  )
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    const rect = event.currentTarget.getBoundingClientRect()
+    dodge(rect.left + rect.width / 2, rect.top + rect.height / 2)
+  }
 
   if (!isDodging) {
     return (
       <button
         ref={btnRef}
         className="btn-no"
-        onMouseEnter={dodge}
-        onClick={dodge}
-        onTouchStart={(e) => {
-          e.preventDefault()
-          dodge()
-        }}
+        onPointerDown={(event) => dodge(event.clientX, event.clientY)}
+        onKeyDown={handleKeyDown}
         aria-label="No (this button avoids you)"
       >
-        {noButtonMessages[0]}
+        {noLabel}
       </button>
     )
   }
@@ -114,22 +90,18 @@ export default function NoButton({ yesRef }: NoButtonProps) {
   if (pos === null) return null
 
   return (
-    <AnimatePresence>
-      <motion.button
-        className="btn-no btn-no-active"
-        style={{ position: 'fixed', left: 0, top: 0, zIndex: 50 }}
-        initial={initialPos ? { x: initialPos.x, y: initialPos.y } : false}
-        animate={{ x: pos.x, y: pos.y }}
-        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-        onMouseEnter={dodge}
-        onClick={dodge}
-        onTouchStart={(e) => {
-          e.preventDefault()
-          dodge()
-        }}
-      >
-        {noButtonMessages[messageIdx]}
-      </motion.button>
-    </AnimatePresence>
+    <motion.button
+      ref={btnRef}
+      className="btn-no btn-no-active"
+      style={{ position: 'fixed', left: 0, top: 0, zIndex: 50 }}
+      initial={initialPos ? { x: initialPos.x, y: initialPos.y } : false}
+      animate={{ x: pos.x, y: pos.y }}
+      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+      onPointerDown={(event) => dodge(event.clientX, event.clientY)}
+      onKeyDown={handleKeyDown}
+      aria-label="No (this button avoids you)"
+    >
+      {noLabel}
+    </motion.button>
   )
 }
