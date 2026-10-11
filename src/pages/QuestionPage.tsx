@@ -13,9 +13,6 @@ export default function QuestionPage() {
   const { noAttempts } = useAppState()
   const yesRef = useRef<HTMLButtonElement>(null)
 
-  const yesScale = Math.min(1 + noAttempts * 0.1, 2)
-  const yesFontSize = Math.min(1.125 + noAttempts * 0.05, 1.6) + 'rem'
-
   const dynamicHeadline = useMemo(() => {
     let text = "🌸 Will you go on a date with me? 🌸"
     for (const h of noAttemptHeadlines) {
@@ -56,14 +53,7 @@ export default function QuestionPage() {
         <div className="flex flex-row items-center justify-center gap-4 mt-8 w-full min-h-[80px]">
           <motion.button
             ref={yesRef}
-            className="btn-yes relative z-20"
-            style={{
-              transform: `scale(${yesScale})`,
-              fontSize: yesFontSize,
-              transition: 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1), font-size 0.4s ease',
-            }}
-            whileHover={{ scale: yesScale * 1.06 }}
-            whileTap={{ scale: yesScale * 0.96 }}
+            className="btn-yes question-yes-button relative z-20"
             animate={{
               boxShadow: [
                 '0 4px 20px rgba(255,77,141,0.4)',
